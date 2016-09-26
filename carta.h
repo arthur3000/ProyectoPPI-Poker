@@ -6,22 +6,24 @@
 using namespace std;
 class Carta{
 public:
+	string nombre; // Este nombre debe ser igual que las imagenes para que se carguen.
 	int tipo; // Corazones, diamantes, picas o treboles
 	int color; // Este atributo no se si sea necesario, pero se puede manejar ganar por color
 	int valor; //  El valor de la carta, ya sea As, 2 , 3 etc
 	bool utilizada; // Para saber si esta carta ya ha sido utilizada dentro de la partida.
 
 
-	Carta(int tipox, int colox, int valox, bool utilizadax);
-	~carta();
+
+	Carta(int tipox, int colox, int valox, bool utilizadax,string nombre);
 	
 };
 // Se tendrian que inializar las 52 cartas de una vez para que se les asigne correctamente todo;
-Carta::Carta(int tipox, int colox, int valox, bool utilizadax){ // No me acorde de como hacer el this -> :P por eso estos nombres feos
+Carta::Carta(int tipox, int colox, int valox, bool utilizadax,string nombrex){ // No me acorde de como hacer el this -> :P por eso estos nombres feos
 	tipo = tipox;
 	color = colox;
 	valor = valox;
 	utilizada = utilizadax;
+	nombre = nombrex;
 }
 
 
