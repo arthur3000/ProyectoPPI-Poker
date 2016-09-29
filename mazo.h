@@ -47,10 +47,12 @@ public:
 	Carta repartirCartaJugador();
 
 	Mazo();
-	~Mazo();
 	
 };
 
+Mazo::Mazo(){
+
+}
 void Mazo::inicializarNombresCartas(){
 	// Corazones 
 	nombreCorazones[0] = "CA.png";
@@ -137,8 +139,10 @@ Carta Mazo::repartirCartaJugador(){
 	srand(time(NULL));
 	do{
 		cartaSeleccionada = rand() & 51 + 0;
-		if(!mazo[cartaSeleccionada].utilizada)
+		if(!mazo[cartaSeleccionada].utilizada){
+			mazo[cartaSeleccionada].utilizada = true;
 			salida = true;
+		}
 
 	}while(!salida);
 
