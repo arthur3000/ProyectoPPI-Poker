@@ -1,0 +1,198 @@
+**Variables posibles iniciales**
+Juego
+entradaMin = 1500
+apuestaMax = 50
+numeroJugadores = 3
+
+Mesa
+i = 0
+dealerId = 0 //para recorrer la ficha del dealer
+apuestaActual = apuestaMax
+bote = 0 //habrá multiples botes en caso de que numeroJugadores>2
+irTodo = falso
+avanzarFase = falso
+huboAumento = falso
+CartasMesa[5] = [Cartas repartidas en cada fase]
+
+Evaluar manos
+arregloEvaluacionValores[13] = [CartasMesa + CartasJugador]
+arregloEvaluacionPalos[4] = [Conteo de palos]
+
+Jugador x
+id = x-1
+dineroTotal = entradaMin //Varia segun se gane o pierda
+dineroApostado = 0 //Variable para realizar operaciones, al finalizar la fase se va a bote
+listo = falso 
+retirado = falso
+rangoJugada = 0 (para evaluar las manos)
+Cartas[2] = []
+
+INICIAR EL JUEGO
+	Elegir un nombre para cada jugador
+	Establecer el dinero$$ mínimo de entrada. 
+	Establecer la apuesta mínima.
+
+INICIAR LA MESA	
+	Establecer indice i=0.
+	Elegir jugador con la ficha de dealer, jugador en pos i(si son dos jugadores, uno siempre tendrá la ficha).
+	--Los jugadores serán representados como una cola circular--
+	/*Directamente a la izquierda del jugador con ficha del dealer hay dos apuestas forzadas, la "ciega pequeña"(mitad de la ciega grande) y la "ciega grande" (Exactamente la apuesta mínima)/*
+	Avanzar en posición de la cola (i++, posición siguiente del dealer).
+	Restar ciega pequeña al dinero$$ total del jugador en posición i(mejor conocido como "jugadori").
+	Añadir cantidad al dinero apostado del jugadori.
+	Restar ciega grande al $$ total del jugador en posición i.
+	Añadir cantidad al dinero apostado del jugadori.
+	Se reparten dos cartas (una a la vez) a cada jugador, recorriendo la cola de jugadores. Ciclo, usar otro indice j
+	Apuesta actual es igual a apuesta mínima.
+	Avanzar en posición de la cola (aumentar índice i, el siguiente del que puso la ciega grande).
+
+PRE-FLOP
+	Hacer Pre-flop:
+		Mientras i < numero de jugadores:
+			/*El jugador en la posición (i) de la cola elige una acción*/
+			Si jugadori está retirado:										
+				Continuar con el ciclo e ignorar las siguientes condicionales. (Continue)	
+			Si jugadori no está listo && no huboAumento: //Esta es dificil, leer atentamente las demas intrucciones
+				Actualizar estado de jugadori: listo=verdadero;
+				Continuar con el ciclo e ignorar las siguientes condicionales. (Continue)	
+			Si irTodo es verdadero:			
+				Desplegar menú de opciones: irTodo o retirarse.			
+			Si  contador de aumentos == 3 && huboAumento:
+				Desplegar menú de opciones: ir, irTodo o retirarse.				
+			De lo contrario 
+				Desplegar menú de opciones: ir, aumentar, irTodo o retirarse.	
+			Caso jugadori se retira:				
+				Actualizar estado de jugadori: listo=verdadero;
+				Actualizar estado de jugadori: retirado=verdadero;
+			Caso jugadori va (elige ir):
+				Restar (apuesta actual - dinero apostado) al dinero$$ total del jugadori. //En caso de que haya puesto ciega, no reste de más.
+				Añadir cantidad restada al dinero apostado.				
+				Actualizar estado de jugadori: listo=verdadero;
+			Caso jugadori aumenta:										
+				Pedir cantidad de aumento (mínimo el doble de la apuesta actual - dinero apostado de dicho jugador).
+				Restar cantidad al dinero actual del jugadori.
+				Añadir cantidad al dinero apostado del jugadori.
+				Actualizar apuesta actual: apuesta actual=+dinero apostado del jugadori.				
+				Actualizar estado de jugadori: listo=falso.
+				Actualizar estado de mesa: huboAumento=verdadero.
+			Caso jugadori apuesta todo:
+				Si irTodo es verdadero && dinero actual jugadori >= apuesta actual:
+					Restar dinero$$ actual del jugadori una cantidad igual a apuesta actual.										
+					Salir del Switch.
+				O Si irTodo es verdadero && dinero actual jugadori < apuesta actual:
+					Restar todo el dinero del jugadori.					
+					Añadir dinero de sobra de regreso al dinero actual de jugadori que haya puesto mas?????
+				De lo contrario:
+					Restar todo el dinero del jugadori.
+				//TODO: Optimizar apuestas all-in
+				Actualizar dinero apostado = cantidad.								
+				Actualizar apuesta actual: apuesta actual es =+ cantidad.
+				Actualizar estado de jugador: listo=falso.
+				Actualizar estado de mesa: irTodo=true.										
+			Caso otro: Desplegar menu elegido
+			Avanzar en posición de la cola (aumentar índice i).				
+		Ciclo Mientras //Aunque basicamente es un for
+		Si todos los jugadores están listos:
+			Actualizar estado de mesa: AvanzarFase=verdadero;	
+		Si huboAumento:		
+			Aumentar contador de aumentos: contador de aumentos++. //Esto está aqui porque el contador es por turnos, no jugadores
+			Actualizar estado de mesa: huboAumento=falso.	
+		Actualizar indice i=0. //Volvemos a revisar a los jugadores para revisar quien no está listo
+	Mientras !AvanzarFase //Este es un do-while
+
+REVISAR ESTADOS
+	Iterar en todos los jugadores y añadir respectivo dinero apostado al bote.
+	Si queda un solo jugador:
+		Sumar a su dinero actual la cantidad del bote.
+		Aumentar dealerId++.
+		Ir a INICIAR MESA
+	Si irTodo es verdadero
+		Repartir y revelar cartas hasta tener un total de 5 en la mesa.
+		Ir a DETERMINAR GANADOR	
+
+1RA FASE O FLOP
+	Repartir 3 cartas en la mesa, visible para todos
+	Actualizar i: i = id de idDealer+1 //Jugador con ficha de dealer actúa al final
+	Hacer Flop:
+		Mientras i < numero de jugadores:			
+			Si jugadori está retirado:										
+				Continuar con el ciclo e ignorar las siguientes condicionales. (Continue)	
+			Si jugadori no está listo y no hubo aumento:
+				Actualizar estado de jugadori: listo=verdadero;
+				Continuar con el ciclo e ignorar las siguientes condicionales. (Continue)	
+			Si huboAumento es verdadero:
+				Si contador de aumentos == 3:
+					Desplegar menú de opciones: ir, irTodo o retirarse.								
+				Desplegar menú de opciones: ir, aumentar, irTodo o retirarse.				
+			Si irTodo es verdadero:			
+				Desplegar menú de opciones: irTodo o retirarse.			
+			De lo contrario 
+				Desplegar menú de opciones: call, aumentar, irTodo o retirarse.	
+			Caso jugadori se retira:				
+				Actualizar estado de jugadori: listo=verdadero;
+				Actualizar estado de jugadori: retirado=verdadero;
+			Caso jugadori usa call:
+				Actualizar estado de jugadori: listo=verdadero.
+			Caso jugadori va (elige ir):
+				estar (apuesta actual - dinero apostado) al dinero$$ total del jugadori.
+				Añadir cantidad restada al dinero apostado.
+				Actualizar estado de jugadori: listo=verdadero.
+			Caso jugadori aumenta:			
+				Pedir cantidad de aumento (mínimo el doble de la apuesta actual - dinero apostado de dicho jugador).
+				Restar cantidad al dinero actual del jugadori.
+				Añadir cantidad al dinero apostado del jugadori.
+				Actualizar apuesta actual: apuesta actual=+dinero apostado del jugadori.				
+				Actualizar estado de jugadori: listo=falso.
+				Actualizar estado de mesa: huboAumento=verdadero.
+			Caso jugadori apuesta todo:
+				Si irTodo es verdadero && dinero actual jugadori >= apuesta actual:
+					Restar dinero$$ actual del jugadori una cantidad igual a apuesta actual.										
+					Salir del Switch.
+				O Si irTodo es verdadero && dinero actual jugadori < apuesta actual:
+					Restar todo el dinero del jugadori.					
+					Añadir dinero de sobra de regreso al dinero actual de jugadori que haya puesto mas?????
+				De lo contrario:
+					Restar todo el dinero del jugadori.
+				//TODO: Optimizar apuestas all-in
+				Actualizar dinero apostado = cantidad.								
+				Actualizar apuesta actual: apuesta actual es =+ cantidad.
+				Actualizar estado de jugador: listo=falso.
+				Actualizar estado de mesa: irTodo=true.			
+			Caso otro: Desplegar menu elegido
+			Avanzar en posición de la cola (aumentar índice i).				
+		Terminar Mientras		
+		Si todos los jugadores están listos
+			Actualizar estado de mesa: AvanzarFase=verdadero;	
+		Si huboAumento		
+			Aumentar contador de aumentos: contador de aumentos++.
+			Actualizar estado de mesa: huboAumento=falso.	
+		Actualizar indice i=0.
+	Mientras !AvanzarFase
+
+2DA FASE O TURN
+	Igual que fase 1
+
+3RA FASE O RIVER
+	Igual que fase 1
+
+SHOWDOWN
+	Revelar cartas de los jugadores
+
+DETERMINAR GANADOR
+	Crear arreglo de verificaciones: Arreglo de 13 celdas.
+	Iterar las 5 cartas en la mesa y añadirlas conteo al arreglo.
+	Para cada jugador en la cola:
+		Clonar arreglo, agregar las cartas del jugadori.
+		Verificar si el arreglo contiene una escalera.
+	 	Si el arreglo contiene una escalera:
+	 		Tiene los mismos palos && es imperial?  
+	 			Actualizar rango de jugada del jugadori: rangoDeJugada=10.
+	 		Tiene los mismo palos?
+	 			Actualizar rango de jugada del jugadori: rangoDeJugada=9.
+	 		De lo contrario
+	 			Actualizar rango de jugada del jugadori: rangoDeJugada=6.
+	 	Verificar si el arreglo contiene color:
+	 		Actualizar rango de jugada del jugadori: rangoDeJugada=8.
+	 and so on........
+
+REPARTIR BOTES
